@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#d85a3a" />
+  <title>Syllabéa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#f4eee4; --surface:#fffdf9; --fg:#2c241c; --muted:#74665a; --accent:#d85a3a; --sage:#4f8a76; --border:#e6d9c8; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { margin:0; font-family: Nunito, system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+    h1,h2,h3,.giant { font-family: Fredoka, Nunito, sans-serif; }
+    .app { max-width: 780px; margin: 0 auto; padding: 16px 16px 110px; }
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .brand { display:flex; gap:10px; align-items:center; }
+    .logo { width:48px; height:48px; border-radius:16px; background:var(--accent); color:#fff; display:grid; place-items:center; font-weight:800; }
+    .stars { background:#fff; border-radius:999px; padding:8px 14px; font-weight:800; box-shadow:0 6px 16px rgba(44,36,28,.08); }
+    .card { background: var(--surface); border-radius:24px; padding:18px; box-shadow:0 8px 24px rgba(44,36,28,.08); }
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:12px; margin-top:14px; }
+    .tile, .island, .letter, .choice, .word { border:0; border-radius:20px; padding:14px; text-align:left; font-weight:800; cursor:pointer; min-height:88px; font-family:inherit; color:var(--fg); }
+    .tile { background:#efe3c8; }
+    .island { text-align:center; min-height:110px; }
+    .letter, .choice { min-width:72px; height:76px; background:#fff; font-family:Fredoka,sans-serif; font-size:2rem; text-align:center; box-shadow:0 4px 12px rgba(44,36,28,.08); }
+    .btn { border:0; border-radius:999px; padding:12px 18px; font-weight:800; cursor:pointer; font-family:inherit; font-size:1rem; }
+    .p { background:var(--accent); color:#fff; }
+    .g { background:#fff; color:var(--fg); }
+    .m { background:#2c241c; color:#fff; }
+    .s { background:var(--sage); color:#fff; }
+    .row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:12px; }
+    .giant { font-size: clamp(4rem, 18vw, 7rem); text-align:center; margin:8px 0; line-height:1; }
+    .sub { color:var(--muted); font-weight:700; text-align:center; }
+    .screen { display:none; }
+    .screen.on { display:block; }
+    .back { border:0; background:#fff; border-radius:999px; padding:8px 14px; font-weight:800; margin-bottom:10px; cursor:pointer; }
+    footer { position:fixed; left:0; right:0; bottom:0; background:rgba(255,253,249,.95); display:flex; justify-content:space-around; padding:8px 6px calc(8px + env(safe-area-inset-bottom)); border-top:1px solid var(--border); }
+    footer button { border:0; background:transparent; font-weight:800; color:var(--muted); font-size:.75rem; }
+    footer button.on { color:var(--accent); }
+    .toast { position:fixed; left:50%; bottom:88px; transform:translateX(-50%); background:#2c241c; color:#fff; padding:10px 16px; border-radius:999px; font-weight:800; display:none; z-index:20; }
+    .toast.on { display:block; }
+    .ov { display:none; position:fixed; inset:0; background:rgba(44,36,28,.4); place-items:center; z-index:30; padding:16px; }
+    .ov.on { display:grid; }
+    .ov .box { background:#fff; border-radius:24px; padding:22px; width:min(92vw,360px); text-align:center; }
+    .word { background:#fff; text-align:center; min-height:auto; }
+    #boardWrap { border:2px dashed var(--border); border-radius:18px; background:#fff; }
+    #board { width:100%; height:240px; display:block; touch-action:none; }
+    select { width:100%; padding:8px; border-radius:10px; border:1px solid var(--border); font-weight:700; margin:6px 0 10px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand"><div class="logo">S</div><div><h1 style="margin:0;font-size:1.4rem">Syllabéa</h1><div class="sub" style="text-align:left">Le jardin des sons</div></div></div>
+      <div class="stars">★ <span id="starCount">0</span></div>
+    </header>
+    <section id="home" class="screen on">
+      <div class="card">
+        <h2 style="margin:0 0 6px">Bonjour, je suis Lila</h2>
+        <p class="sub" style="text-align:left">On colle les sons pour faire des syllabes, puis des mots.</p>
+        <div class="row" style="justify-content:flex-start"><button class="btn p" onclick="speak('Bonjour ! Je suis Lila. On va apprendre à lire ensemble.')">Écouter Lila</button></div>
+      </div>
+      <div class="grid" id="homeGrid"></div>
+    </section>
+    <section id="vowels" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="vowelsBox"></div></section>
+    <section id="map" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="mapBox"></div></section>
+    <section id="island" class="screen"><button class="back" onclick="go('map')">Retour</button><div class="card" id="islandBox"></div></section>
+    <section id="fusion" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="fusionBox"></div></section>
+    <section id="listen" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="listenBox"></div></section>
+    <section id="build" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="buildBox"></div></section>
+    <section id="words" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="wordsBox"></div></section>
+    <section id="write" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="writeBox"></div></section>
+    <section id="readaloud" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="raBox"></div></section>
+    <section id="phrases" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="phrasesBox"></div></section>
+    <section id="parent" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="parentBox"></div></section>
+  </div>
+  <footer>
+    <button id="tab-home" class="on" onclick="go('home')">Maison</button>
+    <button id="tab-map" onclick="go('map')">Îles</button>
+    <button id="tab-listen" onclick="go('listen')">Jeux</button>
+    <button id="tab-write" onclick="go('write')">Écrire</button>
+    <button id="tab-parent" onclick="go('parent')">Parents</button>
+  </footer>
+  <div class="toast" id="toast"></div>
+  <div class="ov" id="ov"><div class="box"><h2 id="ovExpect">ma</h2><p id="ovStatus">Parle maintenant…</p><div class="row"><button class="btn m" onclick="confirmRead()">C’est bon</button><button class="btn g" onclick="stopListen()">Fermer</button></div></div></div>
+  <script src="app.js"></script>
+</body>
+</html>

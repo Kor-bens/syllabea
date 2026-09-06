@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cartes Syllabéa</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f4eee4; color: #2c241c; margin: 0; padding: 20px; }
+    h1 { font-size: 1.4rem; }
+    .tools { margin: 12px 0 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+    button, a.btn { border: 0; background: #d85a3a; color: #fff; font-weight: 700; border-radius: 999px; padding: 10px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .card { background: #fff; border: 2px solid #e6d9c8; border-radius: 14px; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .card .s { font-size: 2.4rem; font-weight: 800; }
+    .card .h { color: #74665a; font-size: .8rem; font-weight: 700; }
+    @media print { .tools { display: none; } body { background: #fff; } }
+    @media (max-width: 700px) { .sheet { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1>Cartes à découper</h1>
+  <p>Imprimez, découpez, faites reconstruire les syllabes sur la table.</p>
+  <div class="tools">
+    <button onclick="window.print()">Imprimer</button>
+    <a class="btn" href="index.html">Retour à l’app</a>
+  </div>
+  <div class="sheet" id="sheet"></div>
+  <script>
+    const V = ["a","i","o","u","é","e"];
+    const C = ["m","l","s","n","r","f","v","p","t","d","b"];
+    const sheet = document.getElementById("sheet");
+    C.forEach(c => V.forEach(v => {
+      const d = document.createElement("div");
+      d.className = "card";
+      d.innerHTML = '<div class="s">' + c + v + '</div><div class="h">' + c + " + " + v + "</div>";
+      sheet.appendChild(d);
+    }));
+  </script>
+</body>
+</html>
