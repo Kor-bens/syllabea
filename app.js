@@ -113,7 +113,7 @@ function speak(text, extra) {
     u.lang = "fr-FR";
     const cub = S.style === "cub";
     const child = S.style === "child";
-    u.rate = (extra && extra.rate) || (cub ? 0.95 : child ? 0.86 : 0.76);
+    u.rate = (extra && extra.rate) || (cub ? 0.78 : child ? 0.8 : 0.7);
     u.pitch = (extra && extra.pitch) || (cub ? 1.18 : child ? 1.1 : 1.0);
     u.volume = 0.92;
     const v = pickVoice(); if (v) u.voice = v;
@@ -266,11 +266,11 @@ function renderFusion() {
 }
 async function playParts() {
   const cur = window._flist[S.fusion % window._flist.length];
-  playPhoneme(cur.c); await wait(400); playPhoneme(cur.v);
+  playPhoneme(cur.c); await wait(750); playPhoneme(cur.v);
 }
 async function playBlend() {
   const cur = window._flist[S.fusion % window._flist.length];
-  playPhoneme(cur.c); await wait(300); playPhoneme(cur.v); await wait(350); speak(cur.s);
+  playPhoneme(cur.c); await wait(600); playPhoneme(cur.v); await wait(700); speak(cur.s);
 }
 function startListen() {
   const pool = syls();
@@ -325,7 +325,7 @@ function renderWords() {
 function playWord(w, cut) {
   const parts = cut.split(/[–-]/).map((s) => s.trim()).filter(Boolean);
   let i = 0;
-  const tick = () => { if (i < parts.length) { speak(parts[i]); i++; setTimeout(tick, 850); } else setTimeout(() => speak(w), 200); };
+  const tick = () => { if (i < parts.length) { speak(parts[i]); i++; setTimeout(tick, 1200); } else setTimeout(() => speak(w), 450); };
   tick();
 }
 function renderWrite() {
@@ -406,7 +406,7 @@ function renderPhrases() {
 function speakPartsP() {
   const parts = PHRASES[S.phrase].cut.split(/[–-]/).map((s) => s.trim()).filter(Boolean);
   let i = 0;
-  const tick = () => { if (i < parts.length) { speak(parts[i]); i++; setTimeout(tick, 850); } };
+  const tick = () => { if (i < parts.length) { speak(parts[i]); i++; setTimeout(tick, 1200); } };
   tick();
 }
 function renderParent() {
