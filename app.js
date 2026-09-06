@@ -113,8 +113,8 @@ function speak(text, extra) {
     u.lang = "fr-FR";
     const cub = S.style === "cub";
     const child = S.style === "child";
-    u.rate = (extra && extra.rate) || (cub ? 0.68 : child ? 0.76 : 0.68);
-    u.pitch = (extra && extra.pitch) || (cub ? 1.0 : child ? 1.06 : 0.98);
+    u.rate = (extra && extra.rate) || (cub ? 0.66 : child ? 0.76 : 0.68);
+    u.pitch = (extra && extra.pitch) || (cub ? 0.88 : child ? 1.06 : 0.98);
     u.volume = 0.92;
     const v = pickVoice(); if (v) u.voice = v;
     speechSynthesis.speak(u);
@@ -415,7 +415,7 @@ function renderParent() {
     <h2>Guide parent</h2>
     <label>Style
       <select onchange="S.style=this.value;save()">
-        <option value="cub" ${S.style === "cub" ? "selected" : ""}>Lionceau (proche Simba)</option>
+        <option value="cub" ${S.style === "cub" ? "selected" : ""}>Chaleureux (style Pumba)</option>
         <option value="child" ${S.style === "child" ? "selected" : ""}>Enfant douce</option>
         <option value="soft" ${S.style === "soft" ? "selected" : ""}>Adulte très douce</option>
       </select>
