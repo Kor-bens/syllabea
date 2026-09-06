@@ -113,8 +113,8 @@ function speak(text, extra) {
     u.lang = "fr-FR";
     const cub = S.style === "cub";
     const child = S.style === "child";
-    u.rate = (extra && extra.rate) || (cub ? 0.78 : child ? 0.8 : 0.7);
-    u.pitch = (extra && extra.pitch) || (cub ? 1.18 : child ? 1.1 : 1.0);
+    u.rate = (extra && extra.rate) || (cub ? 0.68 : child ? 0.76 : 0.68);
+    u.pitch = (extra && extra.pitch) || (cub ? 1.0 : child ? 1.06 : 0.98);
     u.volume = 0.92;
     const v = pickVoice(); if (v) u.voice = v;
     speechSynthesis.speak(u);
