@@ -18,13 +18,33 @@
     .brand { display:flex; gap:10px; align-items:center; }
     .logo { width:48px; height:48px; border-radius:16px; background:var(--accent); color:#fff; display:grid; place-items:center; font-weight:800; }
     .stars { background:#fff; border-radius:999px; padding:8px 14px; font-weight:800; box-shadow:0 6px 16px rgba(44,36,28,.08); }
-    .card { background: var(--surface); border-radius:24px; padding:18px; box-shadow:0 8px 24px rgba(44,36,28,.08); }
-    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:12px; margin-top:14px; }
-    .tile, .island, .letter, .choice, .word { border:0; border-radius:20px; padding:14px; text-align:left; font-weight:800; cursor:pointer; min-height:88px; font-family:inherit; color:var(--fg); }
-    .tile { background:#efe3c8; }
-    .island { text-align:center; min-height:110px; }
-    .letter, .choice { min-width:72px; height:76px; background:#fff; font-family:Fredoka,sans-serif; font-size:2rem; text-align:center; box-shadow:0 4px 12px rgba(44,36,28,.08); }
-    .btn { border:0; border-radius:999px; padding:12px 18px; font-weight:800; cursor:pointer; font-family:inherit; font-size:1rem; }
+    .card { background: var(--surface); border-radius: 28px; padding: 18px 20px; box-shadow: 0 8px 24px rgba(44,36,28,.07); }
+    .hello { display: flex; align-items: center; gap: 16px; }
+    .fox { width: 112px; height: 112px; flex-shrink: 0; }
+    .hello h2 { margin: 0; font-size: 1.55rem; font-weight: 600; }
+    .hello p { margin: 6px 0 12px; color: var(--muted); font-weight: 600; font-size: .95rem; }
+    .bar { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; margin: 16px 0 14px; }
+    .bar span { display: block; height: 100%; width: 8%; background: var(--accent); border-radius: 999px; }
+    .home-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (min-width: 640px) { .home-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 520px) {
+      .hello { flex-direction: column; text-align: center; }
+      .hello p { margin-left: auto; margin-right: auto; }
+      .hello .btn { margin: 0 auto; }
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 14px; }
+    .tile { display: flex; flex-direction: column; justify-content: space-between; min-height: 8.6rem; border: 0; border-radius: 24px; padding: 16px; text-align: left; cursor: pointer; font-family: inherit; color: var(--fg); text-decoration: none; box-shadow: 0 1px 0 rgba(44,36,28,.06); }
+    .tile svg.ico { width: 26px; height: 26px; stroke: var(--fg); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .tile strong { font-family: Fredoka, Nunito, sans-serif; font-size: 1.12rem; font-weight: 600; display: block; margin-top: 18px; }
+    .tile .sub { text-align: left; font-weight: 600; font-size: .82rem; margin-top: 2px; }
+    .c1 { background: #f3d7c8; }
+    .c2 { background: #d7e6df; }
+    .c3 { background: #efe3c8; }
+    .c4 { background: #e4ddd4; }
+    .island, .letter, .choice, .word { border: 0; border-radius: 20px; padding: 14px; font-weight: 800; cursor: pointer; font-family: inherit; color: var(--fg); }
+    .island { text-align: center; min-height: 128px; }
+    .letter, .choice { min-width: 72px; height: 76px; background: #fff; font-family: Fredoka, sans-serif; font-size: 2rem; text-align: center; box-shadow: 0 4px 12px rgba(44,36,28,.08); }
+    .btn { border:0; border-radius:999px; padding:12px 18px; font-weight:800; cursor:pointer; font-family:inherit; font-size:1rem; display:inline-flex; align-items:center; gap:6px; }
     .p { background:var(--accent); color:#fff; }
     .g { background:#fff; color:var(--fg); }
     .m { background:#2c241c; color:#fff; }
@@ -59,11 +79,34 @@
     </header>
     <section id="home" class="screen on">
       <div class="card">
-        <h2 style="margin:0 0 6px">Bonjour, je suis Lila</h2>
-        <p class="sub" style="text-align:left">On colle les sons pour faire des syllabes, puis des mots.</p>
-        <div class="row" style="justify-content:flex-start"><button class="btn p" onclick="speak('Bonjour ! Je suis Lila. On va apprendre à lire ensemble.')">Écouter Lila</button></div>
+        <div class="hello">
+          <svg class="fox" viewBox="0 0 160 160" aria-hidden="true">
+            <ellipse cx="80" cy="138" rx="46" ry="10" fill="#E5D4C0"/>
+            <circle cx="80" cy="88" r="46" fill="#E7A070"/>
+            <path d="M42 62 L22 22 L68 52 Z" fill="#C86A3C"/>
+            <path d="M118 62 L138 22 L92 52 Z" fill="#C86A3C"/>
+            <path d="M42 62 L32 40 L68 52 Z" fill="#F3D2B5"/>
+            <path d="M118 62 L128 40 L92 52 Z" fill="#F3D2B5"/>
+            <circle cx="64" cy="86" r="6" fill="#2C241C"/>
+            <circle cx="96" cy="86" r="6" fill="#2C241C"/>
+            <circle cx="66" cy="84" r="2" fill="#fff"/>
+            <circle cx="98" cy="84" r="2" fill="#fff"/>
+            <ellipse cx="80" cy="104" rx="8" ry="5" fill="#C86A3C"/>
+            <path d="M72 114 Q80 122 88 114" stroke="#2C241C" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <rect x="58" y="118" width="44" height="28" rx="10" fill="#4F8A76"/>
+          </svg>
+          <div>
+            <h2>Bonjour, je suis Lila</h2>
+            <p>On colle les sons pour faire des syllabes, puis des mots. Touche, écoute, lis.</p>
+            <button class="btn p" onclick="speakLila()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              Écouter Lila
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="grid" id="homeGrid"></div>
+      <div class="bar"><span id="progressFill"></span></div>
+      <div class="home-grid" id="homeGrid"></div>
     </section>
     <section id="vowels" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="vowelsBox"></div></section>
     <section id="map" class="screen"><button class="back" onclick="go('home')">Retour</button><div class="card" id="mapBox"></div></section>

@@ -58,7 +58,13 @@ function save() {
   localStorage.setItem("syl_unlocked", JSON.stringify(S.unlocked));
   localStorage.setItem("syl_style", S.style);
   localStorage.setItem("syl_voice", S.voice);
-  document.getElementById("starCount").textContent = S.stars;
+  const el = document.getElementById("starCount");
+  if (el) el.textContent = S.stars;
+  const bar = document.getElementById("progressFill");
+  if (bar) {
+    const pct = Math.min(100, Math.round((S.unlocked.length / CONSONANTS.length) * 70 + Math.min(30, S.stars / 2)));
+    bar.style.width = pct + "%";
+  }
 }
 function toast(m) {
   const el = document.getElementById("toast");
@@ -83,17 +89,24 @@ function pickVoice() {
     pool[0]
   );
 }
-function speak(text) {
+function speak(text, extra) {
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "fr-FR";
-    u.rate = S.style === "child" ? 0.88 : 0.78;
-    u.pitch = S.style === "child" ? 1.12 : 1.0;
+    const child = S.style === "child";
+    u.rate = (extra && extra.rate) || (child ? 0.86 : 0.76);
+    u.pitch = (extra && extra.pitch) || (child ? 1.1 : 1.0);
     u.volume = 0.92;
     const v = pickVoice(); if (v) u.voice = v;
     speechSynthesis.speak(u);
   } catch (e) {}
+}
+function speakLila() {
+  speak(
+    "Bonjour. Moi, c'est Lila. Je vais t'apprendre à lire, tout doucement. On écoute les sons, on les colle... et on lit un mot. Tu vas y arriver.",
+    { rate: 0.78, pitch: 1.06 }
+  );
 }
 function playPhoneme(letter) {
   const key = letter === "é" ? "e_aigu" : letter;
@@ -124,21 +137,42 @@ function go(id) {
   window.scrollTo(0, 0);
 }
 
+const ICO = {
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',
+  spark: '<path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5Z"/><path d="M19 14l.6 1.8L21.4 16.4 19.6 17l-.6 1.8L18.4 17l-1.8-.6 1.8-.6Z"/>',
+  puzzle: '<path d="M19.4 11.2a2 2 0 0 0-2.8-2.8L15 10l-1.2-1.2a2 2 0 1 0-2.8 2.8L12.2 13 11 14.2a2 2 0 1 0 2.8 2.8L15 15.8l1.2 1.2a2 2 0 1 0 2.8-2.8L17.8 13Z"/>',
+  vol: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>',
+  book: '<path d="M2 6s2-2 6-2 6 2 6 2v12s-2-1-6-1-6 1-6 1V6z"/><path d="M12 6s2-2 6-2 6 2 6 2v12s-2-1-6-1-6 1-6 1"/>',
+  pencil: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  mic: '<path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+  print: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+};
+function ico(name) {
+  return `<svg class="ico" viewBox="0 0 24 24">${ICO[name] || ""}</svg>`;
+}
 const HOME = [
-  ["vowels", "Voyelles", "Les sons qui chantent"],
-  ["map", "Îles des lettres", "Une consonne à la fois"],
-  ["fusion", "Fusion magique", "m + a = ma"],
-  ["listen", "J’écoute", "Trouve la syllabe"],
-  ["build", "Je construis", "Lettres → syllabe"],
-  ["words", "Premiers mots", "Je lis pour de vrai"],
-  ["write", "J’écris", "Doigt ou stylet"],
-  ["readaloud", "Je lis tout haut", "Lila écoute"],
-  ["phrases", "Petites phrases", "Sens et fierté"],
-  ["parent", "Guide parent", "Voix et routine"],
+  ["vowels", "Voyelles", "Les sons qui chantent", "sun", "c3"],
+  ["map", "Îles des lettres", "Une consonne à la fois", "spark", "c1"],
+  ["fusion", "Fusion magique", "m + a = ma", "puzzle", "c2"],
+  ["listen", "J’écoute", "Trouve la syllabe", "vol", "c4"],
+  ["build", "Je construis", "Lettres vers syllabe", "puzzle", "c2"],
+  ["words", "Premiers mots", "Je lis pour de vrai", "book", "c3"],
+  ["write", "J’écris", "Doigt ou stylet", "pencil", "c1"],
+  ["readaloud", "Je lis tout haut", "Lila écoute et valide", "mic", "c4"],
+  ["phrases", "Petites phrases", "Sens et fierté", "book", "c2"],
+  ["parent", "Guide parent", "Voix et routine", "info", "c3"],
 ];
-document.getElementById("homeGrid").innerHTML = HOME.map(
-  ([id, t, s]) => `<button class="tile" onclick="go('${id}')"><strong>${t}</strong><div class="sub" style="text-align:left">${s}</div></button>`
-).join("") + `<a class="tile" href="cartes.html" style="text-decoration:none"><strong>Cartes images</strong><div class="sub" style="text-align:left">À imprimer</div></a>`;
+function renderHome() {
+  document.getElementById("homeGrid").innerHTML =
+    HOME.map(
+      ([id, t, s, ic, tint]) =>
+        `<button class="tile ${tint}" onclick="go('${id}')">${ico(ic)}<div><strong>${t}</strong><div class="sub">${s}</div></div></button>`
+    ).join("") +
+    `<a class="tile c1" href="cartes.html">${ico("print")}<div><strong>Cartes images</strong><div class="sub">À imprimer</div></div></a>`;
+  save();
+}
+renderHome();
 
 function pic(name, cls) {
   if (!name) return "";
