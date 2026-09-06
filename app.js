@@ -89,8 +89,8 @@ function pickVoice() {
   const pool = fr.length ? fr : vs;
   if (S.style === "cub") {
     return (
-      pool.find((v) => /thomas|nicolas|daniel|fred|google français/i.test(v.name) && !/female|femme|woman|amelie|amélie|marie|audrey/i.test(v.name)) ||
-      pool.find((v) => /thomas|male|homme/i.test(v.name)) ||
+      pool.find((v) => /amélie|amelie|audrey|marie|aria|google français/i.test(v.name)) ||
+      pool.find((v) => /female|femme|woman/i.test(v.name)) ||
       pool[0]
     );
   }
@@ -113,8 +113,8 @@ function speak(text, extra) {
     u.lang = "fr-FR";
     const cub = S.style === "cub";
     const child = S.style === "child";
-    u.rate = (extra && extra.rate) || (cub ? 0.66 : child ? 0.76 : 0.68);
-    u.pitch = (extra && extra.pitch) || (cub ? 0.88 : child ? 1.06 : 0.98);
+    u.rate = (extra && extra.rate) || (cub ? 0.74 : child ? 0.76 : 0.68);
+    u.pitch = (extra && extra.pitch) || (cub ? 1.04 : child ? 1.06 : 0.98);
     u.volume = 0.92;
     const v = pickVoice(); if (v) u.voice = v;
     speechSynthesis.speak(u);
@@ -415,7 +415,7 @@ function renderParent() {
     <h2>Guide parent</h2>
     <label>Style
       <select onchange="S.style=this.value;save()">
-        <option value="cub" ${S.style === "cub" ? "selected" : ""}>Chaleureux (style Pumba)</option>
+        <option value="cub" ${S.style === "cub" ? "selected" : ""}>Conte (style Disney)</option>
         <option value="child" ${S.style === "child" ? "selected" : ""}>Enfant douce</option>
         <option value="soft" ${S.style === "soft" ? "selected" : ""}>Adulte très douce</option>
       </select>
