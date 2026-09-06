@@ -1,37 +1,37 @@
 const VOWELS = [
-  { l: "a", hint: "ah comme avion" },
-  { l: "i", hint: "i comme igloo" },
-  { l: "o", hint: "o comme orange" },
-  { l: "u", hint: "u comme une lune" },
-  { l: "é", hint: "é comme été" },
-  { l: "e", hint: "euh comme le" },
+  { l: "a", hint: "ah comme avion", img: "avion" },
+  { l: "i", hint: "i comme igloo", img: "igloo" },
+  { l: "o", hint: "o comme orange", img: "orange" },
+  { l: "u", hint: "u comme une lune", img: "lune" },
+  { l: "é", hint: "é comme été", img: "ete" },
+  { l: "e", hint: "euh comme le", img: "lili" },
 ];
 const CONSONANTS = [
-  { l: "m", hint: "le son de maman, au début", color: "#f3d7c8" },
-  { l: "l", hint: "le son de lune, au début", color: "#d7e6df" },
-  { l: "s", hint: "le son de soleil, au début", color: "#efe3c8" },
-  { l: "n", hint: "le son de nid, au début", color: "#e4ddd4" },
-  { l: "r", hint: "le son de rire, au début", color: "#f3d7c8" },
-  { l: "f", hint: "le son de fée, au début", color: "#d7e6df" },
-  { l: "v", hint: "le son de vélo, au début", color: "#efe3c8" },
-  { l: "p", hint: "le son sec de papa, au début", color: "#e4ddd4" },
-  { l: "t", hint: "le son sec de tomate, au début", color: "#f3d7c8" },
-  { l: "d", hint: "le son de dada, au début", color: "#d7e6df" },
-  { l: "b", hint: "le son de bébé, au début", color: "#efe3c8" },
+  { l: "m", hint: "le son de maman, au début", color: "#f3d7c8", img: "maman" },
+  { l: "l", hint: "le son de lune, au début", color: "#d7e6df", img: "lune" },
+  { l: "s", hint: "le son de soleil, au début", color: "#efe3c8", img: "soleil" },
+  { l: "n", hint: "le son de nid, au début", color: "#e4ddd4", img: "nid" },
+  { l: "r", hint: "le son de rire, au début", color: "#f3d7c8", img: "rire" },
+  { l: "f", hint: "le son de fée, au début", color: "#d7e6df", img: "fee" },
+  { l: "v", hint: "le son de vélo, au début", color: "#efe3c8", img: "velo" },
+  { l: "p", hint: "le son sec de papa, au début", color: "#e4ddd4", img: "papa" },
+  { l: "t", hint: "le son sec de tomate, au début", color: "#f3d7c8", img: "tomate" },
+  { l: "d", hint: "le son de dada, au début", color: "#d7e6df", img: "cheval" },
+  { l: "b", hint: "le son de bébé, au début", color: "#efe3c8", img: "bebe" },
 ];
 const WORDS = [
-  { w: "maman", cut: "ma – man", need: ["m", "a", "n"] },
-  { w: "lili", cut: "li – li", need: ["l", "i"] },
-  { w: "lolo", cut: "lo – lo", need: ["l", "o"] },
-  { w: "lala", cut: "la – la", need: ["l", "a"] },
-  { w: "mimi", cut: "mi – mi", need: ["m", "i"] },
-  { w: "nana", cut: "na – na", need: ["n", "a"] },
-  { w: "lune", cut: "lu – ne", need: ["l", "u", "n", "e"] },
-  { w: "sol", cut: "sol", need: ["s", "o", "l"] },
-  { w: "ami", cut: "a – mi", need: ["a", "m", "i"] },
-  { w: "papa", cut: "pa – pa", need: ["p", "a"] },
-  { w: "bébé", cut: "bé – bé", need: ["b", "é"] },
-  { w: "vélo", cut: "vé – lo", need: ["v", "é", "l", "o"] },
+  { w: "maman", cut: "ma – man", need: ["m", "a", "n"], img: "maman" },
+  { w: "lili", cut: "li – li", need: ["l", "i"], img: "lili" },
+  { w: "lolo", cut: "lo – lo", need: ["l", "o"], img: "lolo" },
+  { w: "lala", cut: "la – la", need: ["l", "a"], img: "lala" },
+  { w: "mimi", cut: "mi – mi", need: ["m", "i"], img: "mimi" },
+  { w: "nana", cut: "na – na", need: ["n", "a"], img: "nana" },
+  { w: "lune", cut: "lu – ne", need: ["l", "u", "n", "e"], img: "lune" },
+  { w: "sol", cut: "sol", need: ["s", "o", "l"], img: "soleil" },
+  { w: "ami", cut: "a – mi", need: ["a", "m", "i"], img: "ami" },
+  { w: "papa", cut: "pa – pa", need: ["p", "a"], img: "papa" },
+  { w: "bébé", cut: "bé – bé", need: ["b", "é"], img: "bebe" },
+  { w: "vélo", cut: "vé – lo", need: ["v", "é", "l", "o"], img: "velo" },
 ];
 const PHRASES = [
   { t: "Lila lit.", cut: "Li – la    lit", say: "Lila lit." },
@@ -77,15 +77,20 @@ function pickVoice() {
   if (S.voice) { const x = vs.find((v) => v.name === S.voice); if (x) return x; }
   const fr = vs.filter((v) => /fr/i.test(v.lang + v.name));
   const pool = fr.length ? fr : vs;
-  return pool.find((v) => /child|samantha|amelie|audrey|google français|marie/i.test(v.name)) || pool[0];
+  return (
+    pool.find((v) => /amélie|amelie|audrey|marie|denise|google français|aria|hortense/i.test(v.name)) ||
+    pool.find((v) => /female|femme|woman/i.test(v.name)) ||
+    pool[0]
+  );
 }
 function speak(text) {
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "fr-FR";
-    u.rate = S.style === "child" ? 1.05 : 0.82;
-    u.pitch = S.style === "child" ? 1.55 : 1.05;
+    u.rate = S.style === "child" ? 0.88 : 0.78;
+    u.pitch = S.style === "child" ? 1.12 : 1.0;
+    u.volume = 0.92;
     const v = pickVoice(); if (v) u.voice = v;
     speechSynthesis.speak(u);
   } catch (e) {}
@@ -133,12 +138,17 @@ const HOME = [
 ];
 document.getElementById("homeGrid").innerHTML = HOME.map(
   ([id, t, s]) => `<button class="tile" onclick="go('${id}')"><strong>${t}</strong><div class="sub" style="text-align:left">${s}</div></button>`
-).join("");
+).join("") + `<a class="tile" href="cartes.html" style="text-decoration:none"><strong>Cartes images</strong><div class="sub" style="text-align:left">À imprimer</div></a>`;
 
+function pic(name, cls) {
+  if (!name) return "";
+  return `<img class="${cls || "pic"}" src="img/${name}.jpg" alt="" />`;
+}
 function renderVowels() {
   const v = VOWELS.find((x) => x.l === S.vowel) || VOWELS[0];
   document.getElementById("vowelsBox").innerHTML = `
     <h2>Les voyelles chantent</h2>
+    ${pic(v.img)}
     <div class="giant">${v.l}</div>
     <p class="sub">${v.hint}</p>
     <div class="row">${VOWELS.map((x) => `<button class="letter" onclick="S.vowel='${x.l}';renderVowels();playPhoneme('${x.l}')">${x.l}</button>`).join("")}</div>
@@ -151,7 +161,7 @@ function renderMap() {
   document.getElementById("mapBox").innerHTML = "<h2>Les îles des consonnes</h2><p class='sub'>Le vrai son, pas le nom de la lettre.</p><div class='grid'>" +
     CONSONANTS.map((c, i) => {
       const open = S.unlocked.includes(c.l) || i === 0;
-      return `<button class="island" style="background:${c.color}" onclick="openIsland('${c.l}',${i},${open})">${open ? `<span style="font-family:Fredoka;font-size:2.4rem">${c.l}</span><div>son ${c.l}</div>` : "bientôt"}</button>`;
+      return `<button class="island" style="background:${c.color}" onclick="openIsland('${c.l}',${i},${open})">${open ? `${pic(c.img, "pic-sm")}<span style="font-family:Fredoka;font-size:2.4rem">${c.l}</span><div>son ${c.l}</div>` : "bientôt"}</button>`;
     }).join("") + "</div>";
 }
 function openIsland(l, i, open) {
@@ -165,6 +175,7 @@ function renderIsland() {
   const c = CONSONANTS.find((x) => x.l === S.cons);
   document.getElementById("islandBox").innerHTML = `
     <h2>Île de ${c.l.toUpperCase()}</h2>
+    ${pic(c.img)}
     <p class="sub">${c.hint}</p>
     <div class="giant">${S.shown}</div>
     <div class="row">
@@ -259,7 +270,7 @@ function renderWords() {
   const k = new Set(["a", "e", "i", "o", "u", "é", ...S.unlocked]);
   const list = WORDS.filter((w) => w.need.every((l) => k.has(l)));
   document.getElementById("wordsBox").innerHTML = "<h2>Mes premiers mots</h2>" + (list.length
-    ? `<div class="grid">${list.map((w) => `<div class="word"><div style="font-family:Fredoka;font-size:1.8rem">${w.w}</div><div class="sub">${w.cut}</div><div class="row"><button class="btn g" onclick="playWord('${w.w}','${w.cut}')">Écouter</button><button class="btn m" onclick="listenCheck('${w.w}')">Je lis</button></div></div>`).join("")}</div>`
+    ? `<div class="grid">${list.map((w) => `<div class="word">${pic(w.img)}<div style="font-family:Fredoka;font-size:1.8rem">${w.w}</div><div class="sub">${w.cut}</div><div class="row"><button class="btn g" onclick="playWord('${w.w}','${w.cut}')">Écouter</button><button class="btn m" onclick="listenCheck('${w.w}')">Je lis</button></div></div>`).join("")}</div>`
     : "<p>Ouvre d’abord l’île de M.</p>");
 }
 function playWord(w, cut) {
@@ -355,8 +366,8 @@ function renderParent() {
     <h2>Guide parent</h2>
     <label>Style
       <select onchange="S.style=this.value;save()">
-        <option value="child" ${S.style === "child" ? "selected" : ""}>Enfant motivé et joyeux</option>
-        <option value="soft" ${S.style === "soft" ? "selected" : ""}>Adulte douce</option>
+        <option value="child" ${S.style === "child" ? "selected" : ""}>Enfant douce et joyeuse</option>
+        <option value="soft" ${S.style === "soft" ? "selected" : ""}>Adulte très douce</option>
       </select>
     </label>
     <label>Voix
@@ -365,7 +376,7 @@ function renderParent() {
         ${vs.map((v) => `<option ${S.voice === v.name ? "selected" : ""}>${v.name}</option>`).join("")}
       </select>
     </label>
-    <button class="btn p" onclick="speak('Youpi ! On lit ensemble, c\\'est parti !')">Tester la voix</button>
+    <button class="btn p" onclick="speak('Bravo. On lit ensemble, tout doucement.')">Tester la voix</button>
     <p>Règle d’or : le SON, pas le nom. Routine 10 min : voyelle, une île, fusion, je lis, un mot.</p>
     <p><a href="cartes.html">Cartes à imprimer</a></p>
     <button class="btn g" onclick="if(confirm('Remettre à zéro ?')){S.stars=0;S.unlocked=['m'];save();toast('Recommencé')}">Réinitialiser</button>`;

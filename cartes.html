@@ -6,34 +6,69 @@
   <title>Cartes Syllabéa</title>
   <style>
     body { font-family: system-ui, sans-serif; background: #f4eee4; color: #2c241c; margin: 0; padding: 20px; }
-    h1 { font-size: 1.4rem; }
+    h1 { font-size: 1.4rem; margin-bottom: 6px; }
+    h2 { font-size: 1.1rem; margin: 22px 0 10px; }
     .tools { margin: 12px 0 20px; display: flex; gap: 8px; flex-wrap: wrap; }
     button, a.btn { border: 0; background: #d85a3a; color: #fff; font-weight: 700; border-radius: 999px; padding: 10px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
     .sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-    .card { background: #fff; border: 2px solid #e6d9c8; border-radius: 14px; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .card .s { font-size: 2.4rem; font-weight: 800; }
-    .card .h { color: #74665a; font-size: .8rem; font-weight: 700; }
-    @media print { .tools { display: none; } body { background: #fff; } }
+    .card { background: #fff; border: 2px solid #e6d9c8; border-radius: 14px; min-height: 150px; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; break-inside: avoid; }
+    .card img { width: 88px; height: 88px; object-fit: cover; border-radius: 16px; margin-bottom: 6px; }
+    .card .s { font-size: 2.2rem; font-weight: 800; line-height: 1.1; }
+    .card .h { color: #74665a; font-size: .8rem; font-weight: 700; text-align: center; }
+    @media print { .tools { display: none; } body { background: #fff; padding: 0; } .card { border-color: #ccc; } }
     @media (max-width: 700px) { .sheet { grid-template-columns: repeat(2, 1fr); } }
   </style>
 </head>
 <body>
   <h1>Cartes à découper</h1>
-  <p>Imprimez, découpez, faites reconstruire les syllabes sur la table.</p>
+  <p>Imprimez, découpez. D’un côté la lettre ou la syllabe, de l’autre l’image.</p>
   <div class="tools">
     <button onclick="window.print()">Imprimer</button>
     <a class="btn" href="index.html">Retour à l’app</a>
   </div>
-  <div class="sheet" id="sheet"></div>
+  <h2>Lettres</h2>
+  <div class="sheet" id="letters"></div>
+  <h2>Syllabes</h2>
+  <div class="sheet" id="syllabes"></div>
   <script>
-    const V = ["a","i","o","u","é","e"];
-    const C = ["m","l","s","n","r","f","v","p","t","d","b"];
-    const sheet = document.getElementById("sheet");
-    C.forEach(c => V.forEach(v => {
+    const letters = [
+      { l: "a", img: "avion", h: "avion" },
+      { l: "i", img: "igloo", h: "igloo" },
+      { l: "o", img: "orange", h: "orange" },
+      { l: "u", img: "lune", h: "lune" },
+      { l: "é", img: "ete", h: "été" },
+      { l: "m", img: "maman", h: "maman" },
+      { l: "l", img: "lune", h: "lune" },
+      { l: "s", img: "soleil", h: "soleil" },
+      { l: "n", img: "nid", h: "nid" },
+      { l: "r", img: "rire", h: "rire" },
+      { l: "f", img: "fee", h: "fée" },
+      { l: "v", img: "velo", h: "vélo" },
+      { l: "p", img: "papa", h: "papa" },
+      { l: "t", img: "tomate", h: "tomate" },
+      { l: "d", img: "cheval", h: "dada" },
+      { l: "b", img: "bebe", h: "bébé" },
+    ];
+    const C = [
+      { l: "m", img: "maman" }, { l: "l", img: "lune" }, { l: "s", img: "soleil" },
+      { l: "n", img: "nid" }, { l: "r", img: "rire" }, { l: "f", img: "fee" },
+      { l: "v", img: "velo" }, { l: "p", img: "papa" }, { l: "t", img: "tomate" },
+      { l: "d", img: "cheval" }, { l: "b", img: "bebe" },
+    ];
+    const V = ["a", "i", "o", "u", "é", "e"];
+    const lettersEl = document.getElementById("letters");
+    letters.forEach((x) => {
       const d = document.createElement("div");
       d.className = "card";
-      d.innerHTML = '<div class="s">' + c + v + '</div><div class="h">' + c + " + " + v + "</div>";
-      sheet.appendChild(d);
+      d.innerHTML = '<img src="img/' + x.img + '.jpg" alt="' + x.h + '" /><div class="s">' + x.l + '</div><div class="h">' + x.h + "</div>";
+      lettersEl.appendChild(d);
+    });
+    const sylEl = document.getElementById("syllabes");
+    C.forEach((c) => V.forEach((v) => {
+      const d = document.createElement("div");
+      d.className = "card";
+      d.innerHTML = '<img src="img/' + c.img + '.jpg" alt="" /><div class="s">' + c.l + v + '</div><div class="h">' + c.l + " + " + v + "</div>";
+      sylEl.appendChild(d);
     }));
   </script>
 </body>
