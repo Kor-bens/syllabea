@@ -46,13 +46,17 @@ const ALIAS = { a: ["a", "ah", "à"], i: ["i", "y"], o: ["o", "oh", "eau"], u: [
 const S = {
   stars: Number(localStorage.getItem("syl_stars") || 0),
   unlocked: JSON.parse(localStorage.getItem("syl_unlocked") || '["m"]'),
-  style: localStorage.getItem("syl_style") || "child",
+  style: localStorage.getItem("syl_style") || "cub",
   voice: localStorage.getItem("syl_voice") || "",
   vowel: "a", cons: "m", shown: "m", fusion: 0,
   listenT: "ma", listenC: [], listenOk: 0, listenN: 0,
   buildT: "ma", buildC: "", buildV: "",
   write: "ma", phrase: 0, raMode: "syl", raItem: "ma", expect: "",
 };
+if (!localStorage.getItem("syl_simba")) {
+  S.style = "cub";
+  localStorage.setItem("syl_simba", "1");
+}
 function save() {
   localStorage.setItem("syl_stars", S.stars);
   localStorage.setItem("syl_unlocked", JSON.stringify(S.unlocked));
@@ -81,32 +85,43 @@ function syls() {
 function pickVoice() {
   const vs = speechSynthesis.getVoices();
   if (S.voice) { const x = vs.find((v) => v.name === S.voice); if (x) return x; }
-  const fr = vs.filter((v) => /fr/i.test(v.lang + v.name));
+  const fr = vs.filter((v) => /fr/i.test((v.lang || "") + (v.name || "")));
   const pool = fr.length ? fr : vs;
+  if (S.style === "cub") {
+    return (
+      pool.find((v) => /thomas|nicolas|daniel|fred|google français/i.test(v.name) && !/female|femme|woman|amelie|amélie|marie|audrey/i.test(v.name)) ||
+      pool.find((v) => /thomas|male|homme/i.test(v.name)) ||
+      pool[0]
+    );
+  }
   return (
     pool.find((v) => /amélie|amelie|audrey|marie|denise|google français|aria|hortense/i.test(v.name)) ||
     pool.find((v) => /female|femme|woman/i.test(v.name)) ||
     pool[0]
   );
 }
+function playClip(file, fallback) {
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const a = new Audio(file);
+  a.onerror = () => { if (fallback) speak(fallback); };
+  return a.play().catch(() => { if (fallback) speak(fallback); });
+}
 function speak(text, extra) {
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "fr-FR";
+    const cub = S.style === "cub";
     const child = S.style === "child";
-    u.rate = (extra && extra.rate) || (child ? 0.86 : 0.76);
-    u.pitch = (extra && extra.pitch) || (child ? 1.1 : 1.0);
+    u.rate = (extra && extra.rate) || (cub ? 0.95 : child ? 0.86 : 0.76);
+    u.pitch = (extra && extra.pitch) || (cub ? 1.18 : child ? 1.1 : 1.0);
     u.volume = 0.92;
     const v = pickVoice(); if (v) u.voice = v;
     speechSynthesis.speak(u);
   } catch (e) {}
 }
 function speakLila() {
-  speak(
-    "Bonjour. Moi, c'est Lila. Je vais t'apprendre à lire, tout doucement. On écoute les sons, on les colle... et on lit un mot. Tu vas y arriver.",
-    { rate: 0.78, pitch: 1.06 }
-  );
+  playClip("audio/lila-intro.mp3", "Hey ! Moi c'est Lila. Viens, on va lire ensemble.");
 }
 function playPhoneme(letter) {
   const key = letter === "é" ? "e_aigu" : letter;
@@ -274,8 +289,8 @@ function startListen() {
 }
 function guess(s) {
   S.listenN++;
-  if (s === S.listenT) { S.listenOk++; award(); setTimeout(startListen, 700); }
-  else { speak("Écoute encore."); setTimeout(() => speakSyl(S.listenT), 700); document.querySelector("#listenBox .sub:last-child").textContent = "Score : " + S.listenOk + " / " + S.listenN; }
+  if (s === S.listenT) { S.listenOk++; award(); playClip("audio/bravo.mp3", "Bravo !"); setTimeout(startListen, 900); }
+  else { playClip("audio/encore.mp3", "Écoute encore."); setTimeout(() => speakSyl(S.listenT), 900); document.querySelector("#listenBox .sub:last-child").textContent = "Score : " + S.listenOk + " / " + S.listenN; }
 }
 function startBuild() {
   const pool = syls();
@@ -400,7 +415,8 @@ function renderParent() {
     <h2>Guide parent</h2>
     <label>Style
       <select onchange="S.style=this.value;save()">
-        <option value="child" ${S.style === "child" ? "selected" : ""}>Enfant douce et joyeuse</option>
+        <option value="cub" ${S.style === "cub" ? "selected" : ""}>Lionceau (proche Simba)</option>
+        <option value="child" ${S.style === "child" ? "selected" : ""}>Enfant douce</option>
         <option value="soft" ${S.style === "soft" ? "selected" : ""}>Adulte très douce</option>
       </select>
     </label>
@@ -410,7 +426,7 @@ function renderParent() {
         ${vs.map((v) => `<option ${S.voice === v.name ? "selected" : ""}>${v.name}</option>`).join("")}
       </select>
     </label>
-    <button class="btn p" onclick="speak('Bravo. On lit ensemble, tout doucement.')">Tester la voix</button>
+    <button class="btn p" onclick="playClip('audio/test-voix.mp3','On lit ensemble, tout doucement.')">Tester la voix</button>
     <p>Règle d’or : le SON, pas le nom. Routine 10 min : voyelle, une île, fusion, je lis, un mot.</p>
     <p><a href="cartes.html">Cartes à imprimer</a></p>
     <button class="btn g" onclick="if(confirm('Remettre à zéro ?')){S.stars=0;S.unlocked=['m'];save();toast('Recommencé')}">Réinitialiser</button>`;
@@ -445,7 +461,7 @@ function listenCheck(expected) {
 }
 function confirmRead() { finish(true); }
 function finish(ok) {
-  if (ok) { award(); document.getElementById("ovStatus").textContent = "Oui ! Bravo !"; speak("Bravo !"); setTimeout(stopListen, 700); }
+  if (ok) { award(); document.getElementById("ovStatus").textContent = "Oui ! Bravo !"; playClip("audio/bravo.mp3", "Bravo !"); setTimeout(stopListen, 900); }
 }
 function stopListen() { try { rec && rec.abort(); } catch (e) {} document.getElementById("ov").classList.remove("on"); }
 save();
