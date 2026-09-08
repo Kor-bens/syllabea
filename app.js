@@ -34,13 +34,13 @@ const WORDS = [
   { w: "vélo", cut: "vé – lo", need: ["v", "é", "l", "o"], img: "velo" },
 ];
 const PHRASES = [
-  { t: "Lila lit.", cut: "Li – la    lit", say: "Lila lit." },
-  { t: "Maman lit.", cut: "Ma – man    lit", say: "Maman lit." },
-  { t: "Papa et maman.", cut: "Pa – pa    et    ma – man", say: "Papa et maman." },
-  { t: "Le bébé rit.", cut: "Le    bé – bé    rit", say: "Le bébé rit." },
-  { t: "La fée vole.", cut: "La    fée    vo – le", say: "La fée vole." },
+  { t: "Lila lit.", cut: "Li – la    lit", say: "Lila lit.", img: "lili", parts: ["Li", "la", "lit"] },
+  { t: "Maman lit.", cut: "Ma – man    lit", say: "Maman lit.", img: "maman", parts: ["Ma", "man", "lit"] },
+  { t: "Papa et maman.", cut: "Pa – pa    et    ma – man", say: "Papa et maman.", img: "papa", parts: ["Pa", "pa", "et", "ma", "man"] },
+  { t: "Le bébé rit.", cut: "Le    bé – bé    rit", say: "Le bébé rit.", img: "bebe", parts: ["Le", "bé", "bé", "rit"] },
+  { t: "La fée vole.", cut: "La    fée    vo – le", say: "La fée vole.", img: "fee", parts: ["La", "fée", "vo", "le"] },
 ];
-const TTS = { a: "ah", i: "i", o: "oh", u: "u", é: "é", e: "euh", m: "mhmm", l: "l'", s: "siffle", n: "nhmm", r: "rre", f: "fffou", v: "veu", p: "peuh", t: "teuh", d: "deuh", b: "beuh" };
+const TTS = { a: "ah", i: "i", o: "oh", u: "u", é: "é", e: "euh", m: "mmm", l: "lll", s: "sss", n: "nnn", r: "rrr", f: "fff", v: "vvv", p: "p", t: "t", d: "d", b: "b" };
 const ALIAS = { a: ["a", "ah", "à"], i: ["i", "y"], o: ["o", "oh", "eau"], u: ["u"], é: ["é", "et", "est"], e: ["e", "euh"], m: ["m", "em", "aime"], l: ["l", "elle", "le"], s: ["s", "esse"], n: ["n", "ne"], r: ["r", "air"], f: ["f", "fée"], v: ["v", "vé"], p: ["p"], t: ["t"], d: ["d"], b: ["b", "bé"] };
 
 const S = {
@@ -51,7 +51,7 @@ const S = {
   vowel: "a", cons: "m", shown: "m", fusion: 0,
   listenT: "ma", listenC: [], listenOk: 0, listenN: 0,
   buildT: "ma", buildC: "", buildV: "",
-  write: "ma", phrase: 0, raMode: "syl", raItem: "ma", expect: "",
+  write: "ma", phrase: 0, phraseStep: -1, raMode: "syl", raItem: "ma", expect: "", busy: false,
 };
 if (!localStorage.getItem("syl_simba")) {
   S.style = "cub";
@@ -101,24 +101,41 @@ function pickVoice() {
   );
 }
 function playClip(file, fallback) {
-  try { speechSynthesis.cancel(); } catch (e) {}
-  const a = new Audio(file);
-  a.onerror = () => { if (fallback) speak(fallback); };
-  return a.play().catch(() => { if (fallback) speak(fallback); });
+  return new Promise((resolve) => {
+    try { speechSynthesis.cancel(); } catch (e) {}
+    const a = new Audio(file);
+    let done = false;
+    const end = () => { if (done) return; done = true; resolve(); };
+    a.onended = end;
+    a.onerror = () => {
+      if (fallback) speak(fallback).then(end);
+      else end();
+    };
+    a.play().catch(() => {
+      if (fallback) speak(fallback).then(end);
+      else end();
+    });
+    setTimeout(end, 10000);
+  });
 }
 function speak(text, extra) {
-  try {
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "fr-FR";
-    const cub = S.style === "cub";
-    const child = S.style === "child";
-    u.rate = (extra && extra.rate) || (cub ? 0.74 : child ? 0.76 : 0.68);
-    u.pitch = (extra && extra.pitch) || (cub ? 1.04 : child ? 1.06 : 0.98);
-    u.volume = 0.92;
-    const v = pickVoice(); if (v) u.voice = v;
-    speechSynthesis.speak(u);
-  } catch (e) {}
+  return new Promise((resolve) => {
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "fr-FR";
+      const cub = S.style === "cub";
+      const child = S.style === "child";
+      u.rate = (extra && extra.rate) || (cub ? 0.74 : child ? 0.76 : 0.68);
+      u.pitch = (extra && extra.pitch) || (cub ? 1.04 : child ? 1.06 : 0.98);
+      u.volume = 0.92;
+      const v = pickVoice(); if (v) u.voice = v;
+      u.onend = () => resolve();
+      u.onerror = () => resolve();
+      speechSynthesis.speak(u);
+      setTimeout(() => resolve(), 8000);
+    } catch (e) { resolve(); }
+  });
 }
 function speakLila() {
   playClip("audio/lila-intro.mp3", "Hey ! Moi c'est Lila. Viens, on va lire ensemble.");
@@ -126,8 +143,14 @@ function speakLila() {
 function playPhoneme(letter) {
   const key = letter === "é" ? "e_aigu" : letter;
   const a = new Audio("audio/" + encodeURIComponent(key) + ".mp3");
-  a.onerror = () => speak(TTS[letter] || letter);
-  a.play().catch(() => speak(TTS[letter] || letter));
+  a.onerror = () => {
+    if (letter === "l") return;
+    speak(TTS[letter] || letter);
+  };
+  return a.play().catch(() => {
+    if (letter === "l") return;
+    speak(TTS[letter] || letter);
+  });
 }
 function speakSyl(s) { if (String(s).length === 1) playPhoneme(s); else speak(s); }
 function wait(ms) { return new Promise((r) => setTimeout(r, ms)); }
@@ -193,14 +216,19 @@ function pic(name, cls) {
   if (!name) return "";
   return `<img class="${cls || "pic"}" src="img/${name}.jpg" alt="" />`;
 }
+function glyph(s) {
+  s = String(s || "");
+  if (s.length !== 1) return s;
+  return `<span class="pair"><b>${s.toUpperCase()}</b><i>${s.toLowerCase()}</i></span>`;
+}
 function renderVowels() {
   const v = VOWELS.find((x) => x.l === S.vowel) || VOWELS[0];
   document.getElementById("vowelsBox").innerHTML = `
     <h2>Les voyelles chantent</h2>
     ${pic(v.img)}
-    <div class="giant">${v.l}</div>
+    <div class="giant">${glyph(v.l)}</div>
     <p class="sub">${v.hint}</p>
-    <div class="row">${VOWELS.map((x) => `<button class="letter" onclick="S.vowel='${x.l}';renderVowels();playPhoneme('${x.l}')">${x.l}</button>`).join("")}</div>
+    <div class="row">${VOWELS.map((x) => `<button class="letter" onclick="S.vowel='${x.l}';renderVowels();playPhoneme('${x.l}')">${glyph(x.l)}</button>`).join("")}</div>
     <div class="row">
       <button class="btn p" onclick="playPhoneme('${v.l}')">Écouter</button>
       <button class="btn m" onclick="listenCheck('${v.l}')">Je lis</button>
@@ -210,7 +238,7 @@ function renderMap() {
   document.getElementById("mapBox").innerHTML = "<h2>Les îles des consonnes</h2><p class='sub'>Le vrai son, pas le nom de la lettre.</p><div class='grid'>" +
     CONSONANTS.map((c, i) => {
       const open = S.unlocked.includes(c.l) || i === 0;
-      return `<button class="island" style="background:${c.color}" onclick="openIsland('${c.l}',${i},${open})">${open ? `${pic(c.img, "pic-sm")}<span style="font-family:Fredoka;font-size:2.4rem">${c.l}</span><div>son ${c.l}</div>` : "bientôt"}</button>`;
+      return `<button class="island" style="background:${c.color}" onclick="openIsland('${c.l}',${i},${open})">${open ? `${pic(c.img, "pic-sm")}<span style="font-family:Fredoka;font-size:2.1rem">${glyph(c.l)}</span><div>son ${c.l}</div>` : "bientôt"}</button>`;
     }).join("") + "</div>";
 }
 function openIsland(l, i, open) {
@@ -223,10 +251,10 @@ function openIsland(l, i, open) {
 function renderIsland() {
   const c = CONSONANTS.find((x) => x.l === S.cons);
   document.getElementById("islandBox").innerHTML = `
-    <h2>Île de ${c.l.toUpperCase()}</h2>
+    <h2>Île de ${c.l.toUpperCase()} ${c.l}</h2>
     ${pic(c.img)}
     <p class="sub">${c.hint}</p>
-    <div class="giant">${S.shown}</div>
+    <div class="giant">${String(S.shown).length === 1 ? glyph(S.shown) : S.shown}</div>
     <div class="row">
       <button class="btn p" onclick="S.shown='${c.l}';renderIsland();playPhoneme('${c.l}')">Son de la lettre</button>
       <button class="btn m" onclick="listenCheck(S.shown)">Je lis</button>
@@ -251,7 +279,7 @@ function renderFusion() {
     <h2>La fusion magique</h2>
     <p class="sub">On glisse le son dans la voyelle.</p>
     <div class="row" style="font-family:Fredoka;font-size:2.2rem">
-      <span class="letter">${cur.c}</span> + <span class="letter">${cur.v}</span> = <span class="letter" style="width:100px;background:#f3d7c8">${cur.s}</span>
+      <span class="letter">${glyph(cur.c)}</span> + <span class="letter">${glyph(cur.v)}</span> = <span class="letter" style="width:100px;background:#f3d7c8">${cur.s}</span>
     </div>
     <div class="row">
       <button class="btn g" onclick="playParts()">1. Sons séparés</button>
@@ -288,9 +316,24 @@ function startListen() {
   setTimeout(() => speakSyl(S.listenT), 250);
 }
 function guess(s) {
+  if (S.busy) return;
+  S.busy = true;
   S.listenN++;
-  if (s === S.listenT) { S.listenOk++; award(); playClip("audio/bravo.mp3", "Bravo !"); setTimeout(startListen, 900); }
-  else { playClip("audio/encore.mp3", "Écoute encore."); setTimeout(() => speakSyl(S.listenT), 900); document.querySelector("#listenBox .sub:last-child").textContent = "Score : " + S.listenOk + " / " + S.listenN; }
+  if (s === S.listenT) {
+    S.listenOk++;
+    award();
+    playClip("audio/bravo.mp3", "Bravo !").then(() => wait(350)).then(() => {
+      S.busy = false;
+      startListen();
+    });
+  } else {
+    playClip("audio/encore.mp3", "Écoute encore.").then(() => wait(300)).then(() => {
+      speakSyl(S.listenT);
+      S.busy = false;
+      const sc = document.querySelector("#listenBox .sub:last-child");
+      if (sc) sc.textContent = "Score : " + S.listenOk + " / " + S.listenN;
+    });
+  }
 }
 function startBuild() {
   const pool = syls();
@@ -303,17 +346,26 @@ function renderBuild() {
     <div class="giant">${S.buildT}</div>
     <div class="row"><button class="btn g" onclick="speakSyl(S.buildT)">Modèle</button><button class="btn m" onclick="listenCheck(S.buildT)">Je lis</button></div>
     <p class="sub">Consonnes</p>
-    <div class="row">${known().map((c) => `<button class="letter" onclick="S.buildC='${c.l}';playPhoneme('${c.l}');checkBuild()">${c.l}</button>`).join("")}</div>
+    <div class="row">${known().map((c) => `<button class="letter" onclick="S.buildC='${c.l}';playPhoneme('${c.l}');checkBuild()">${glyph(c.l)}</button>`).join("")}</div>
     <p class="sub">Voyelles</p>
-    <div class="row">${VOWELS.map((v) => `<button class="letter" onclick="S.buildV='${v.l}';playPhoneme('${v.l}');checkBuild()">${v.l}</button>`).join("")}</div>
-    <p class="giant" style="font-size:2.4rem">${S.buildC || "?"} + ${S.buildV || "?"} = ${S.buildC && S.buildV ? S.buildC + S.buildV : "?"}</p>`;
+    <div class="row">${VOWELS.map((v) => `<button class="letter" onclick="S.buildV='${v.l}';playPhoneme('${v.l}');checkBuild()">${glyph(v.l)}</button>`).join("")}</div>
+    <p class="giant" style="font-size:2.4rem">${S.buildC ? glyph(S.buildC) : "?"} + ${S.buildV ? glyph(S.buildV) : "?"} = ${S.buildC && S.buildV ? S.buildC + S.buildV : "?"}</p>`;
 }
 function checkBuild() {
   renderBuild();
   if (!S.buildC || !S.buildV) return;
   const s = S.buildC + S.buildV;
-  speakSyl(s);
-  if (s === S.buildT) { award(); setTimeout(startBuild, 800); }
+  if (s === S.buildT) {
+    if (S.busy) return;
+    S.busy = true;
+    award();
+    playClip("audio/bravo.mp3", "Bravo !").then(() => wait(350)).then(() => {
+      S.busy = false;
+      startBuild();
+    });
+  } else {
+    speakSyl(s);
+  }
 }
 function renderWords() {
   const k = new Set(["a", "e", "i", "o", "u", "é", ...S.unlocked]);
@@ -333,8 +385,8 @@ function renderWrite() {
   document.getElementById("writeBox").innerHTML = `
     <h2>J’écris</h2>
     <p class="sub">Regarde le modèle, puis trace.</p>
-    <div class="giant" style="color:#d4c3ad">${S.write}</div>
-    <div class="row">${items.map((it) => `<button class="letter" style="width:64px;height:56px;font-size:1.4rem" onclick="S.write='${it}';renderWrite();speakSyl('${it}')">${it}</button>`).join("")}</div>
+    <div class="giant" style="color:#d4c3ad">${String(S.write).length === 1 ? glyph(S.write) : S.write}</div>
+    <div class="row">${items.map((it) => `<button class="letter" style="width:auto;min-width:64px;height:56px;font-size:1.3rem;padding:8px 10px" onclick="S.write='${it}';renderWrite();speakSyl('${it}')">${it.length === 1 ? glyph(it) : it}</button>`).join("")}</div>
     <div id="boardWrap"><canvas id="board"></canvas></div>
     <div class="row">
       <button class="btn g" onclick="clearBoard()">Effacer</button>
@@ -367,7 +419,7 @@ function clearBoard() { setupBoard(); }
 function renderRA() {
   document.getElementById("raBox").innerHTML = `
     <h2>Je lis tout haut</h2>
-    <div class="giant">${S.raItem}</div>
+    <div class="giant">${String(S.raItem).length === 1 ? glyph(S.raItem) : S.raItem}</div>
     <p class="sub">${S.raMode === "letter" ? "lettre" : S.raMode === "word" ? "mot" : "syllabe"}</p>
     <div class="row"><button class="btn p" onclick="speakSyl(S.raItem)">Modèle</button><button class="btn m" onclick="listenCheck(S.raItem)">Je lis</button></div>
     <div class="row">
@@ -389,25 +441,38 @@ function nextRA() {
 }
 function renderPhrases() {
   const p = PHRASES[S.phrase];
+  const step = S.phraseStep;
   document.getElementById("phrasesBox").innerHTML = `
     <h2>Petites phrases</h2>
+    ${pic(p.img)}
     <div class="giant" style="font-size:2.2rem">${p.t}</div>
-    <p class="sub">${p.cut}</p>
+    <div class="chips">${p.parts.map((part, i) => `<span class="chip${step === i || step === -2 ? " on" : ""}">${part}</span>`).join("")}</div>
+    <p class="sub">${step === -2 ? "Toute la phrase" : "Écoute d’abord chaque bout, puis la phrase."}</p>
     <div class="row">
-      <button class="btn g" onclick="speakPartsP()">Syllabes</button>
-      <button class="btn p" onclick="speak(PHRASES[S.phrase].say)">Phrase</button>
+      <button class="btn p" onclick="listenPhrase()">J’écoute</button>
+      <button class="btn g" onclick="speak(PHRASES[S.phrase].say, {rate:0.7})">Phrase entière</button>
       <button class="btn m" onclick="listenCheck(PHRASES[S.phrase].say)">Je lis</button>
     </div>
     <div class="row">
-      <button class="btn g" onclick="S.phrase=(S.phrase-1+PHRASES.length)%PHRASES.length;renderPhrases()">Précédent</button>
-      <button class="btn g" onclick="S.phrase=(S.phrase+1)%PHRASES.length;renderPhrases()">Suivant</button>
+      <button class="btn g" onclick="S.phrase=(S.phrase-1+PHRASES.length)%PHRASES.length;S.phraseStep=-1;renderPhrases()">Précédent</button>
+      <button class="btn g" onclick="S.phrase=(S.phrase+1)%PHRASES.length;S.phraseStep=-1;renderPhrases()">Suivant</button>
     </div>`;
 }
-function speakPartsP() {
-  const parts = PHRASES[S.phrase].cut.split(/[–-]/).map((s) => s.trim()).filter(Boolean);
-  let i = 0;
-  const tick = () => { if (i < parts.length) { speak(parts[i]); i++; setTimeout(tick, 1200); } };
-  tick();
+async function listenPhrase() {
+  if (S.busy) return;
+  S.busy = true;
+  const p = PHRASES[S.phrase];
+  for (let i = 0; i < p.parts.length; i++) {
+    S.phraseStep = i;
+    renderPhrases();
+    await speak(p.parts[i], { rate: 0.68 });
+    await wait(500);
+  }
+  S.phraseStep = -2;
+  renderPhrases();
+  await wait(400);
+  await speak(p.say, { rate: 0.7 });
+  S.busy = false;
 }
 function renderParent() {
   const vs = (speechSynthesis.getVoices() || []).filter((v) => /fr/i.test(v.lang + v.name));
@@ -443,7 +508,7 @@ function match(heard, expected) {
 let rec = null;
 function listenCheck(expected) {
   S.expect = expected;
-  document.getElementById("ovExpect").textContent = expected;
+  document.getElementById("ovExpect").innerHTML = String(expected).length === 1 ? glyph(expected) : expected;
   document.getElementById("ovStatus").textContent = "Parle maintenant…";
   document.getElementById("ov").classList.add("on");
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;

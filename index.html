@@ -43,7 +43,14 @@
     .c4 { background: #e4ddd4; }
     .island, .letter, .choice, .word { border: 0; border-radius: 20px; padding: 14px; font-weight: 800; cursor: pointer; font-family: inherit; color: var(--fg); }
     .island { text-align: center; min-height: 128px; }
-    .letter, .choice { min-width: 72px; height: 76px; background: #fff; font-family: Fredoka, sans-serif; font-size: 2rem; text-align: center; box-shadow: 0 4px 12px rgba(44,36,28,.08); }
+    .letter, .choice { min-width: 72px; min-height: 76px; height: auto; background: #fff; font-family: Fredoka, sans-serif; font-size: 2rem; text-align: center; box-shadow: 0 4px 12px rgba(44,36,28,.08); display: flex; align-items: center; justify-content: center; }
+    .pair { display: inline-flex; align-items: baseline; gap: .12em; line-height: 1; }
+    .pair b { font-weight: 700; font-style: normal; }
+    .pair i { font-style: normal; font-weight: 600; opacity: .8; font-size: .72em; }
+    .giant .pair i { font-size: .7em; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+    .chip { background: #fff; border: 2px solid var(--border); border-radius: 14px; padding: 8px 14px; font-family: Fredoka, sans-serif; font-size: 1.5rem; font-weight: 700; }
+    .chip.on { background: #f3d7c8; border-color: var(--accent); transform: scale(1.08); }
     .btn { border:0; border-radius:999px; padding:12px 18px; font-weight:800; cursor:pointer; font-family:inherit; font-size:1rem; display:inline-flex; align-items:center; gap:6px; }
     .p { background:var(--accent); color:#fff; }
     .g { background:#fff; color:var(--fg); }

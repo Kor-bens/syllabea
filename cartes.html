@@ -60,7 +60,7 @@
     letters.forEach((x) => {
       const d = document.createElement("div");
       d.className = "card";
-      d.innerHTML = '<img src="img/' + x.img + '.jpg" alt="' + x.h + '" /><div class="s">' + x.l + '</div><div class="h">' + x.h + "</div>";
+      d.innerHTML = '<img src="img/' + x.img + '.jpg" alt="' + x.h + '" /><div class="s">' + x.l.toUpperCase() + " " + x.l + '</div><div class="h">' + x.h + "</div>";
       lettersEl.appendChild(d);
     });
     const sylEl = document.getElementById("syllabes");
