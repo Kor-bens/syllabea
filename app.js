@@ -18,6 +18,17 @@ const CONSONANTS = [
   { l: "t", hint: "le son sec de tomate, au début", color: "#f3d7c8", img: "tomate" },
   { l: "d", hint: "le son de dada, au début", color: "#d7e6df", img: "cheval" },
   { l: "b", hint: "le son de bébé, au début", color: "#efe3c8", img: "bebe" },
+  { l: "c", hint: "le son dur de cadeau, comme k", color: "#d7e6df", img: "cadeau" },
+  { l: "g", hint: "le son de gâteau, au début", color: "#efe3c8", img: "gateau" },
+  { l: "j", hint: "le son de jus, au début", color: "#e4ddd4", img: "jus" },
+  { l: "z", hint: "le son de zoo, au début", color: "#f3d7c8", img: "zoo" },
+  { l: "ch", hint: "le son de chat, ch ch ch", color: "#d7e6df", img: "chat" },
+  { l: "k", hint: "le son de kiwi, comme c dur", color: "#efe3c8", img: "kiwi" },
+  { l: "q", hint: "qu comme quatre, son k", color: "#e4ddd4", img: "quatre" },
+  { l: "y", hint: "comme i, yoyo", color: "#f3d7c8", img: "yoyo" },
+  { l: "w", hint: "le son ou de wagon", color: "#d7e6df", img: "wagon" },
+  { l: "x", hint: "le son ks de taxi", color: "#efe3c8", img: "taxi", noFusion: true },
+  { l: "h", hint: "h se tait, comme hibou", color: "#e4ddd4", img: "hibou", noFusion: true },
 ];
 const WORDS = [
   { w: "maman", cut: "ma – man", need: ["m", "a", "n"], img: "maman" },
@@ -32,6 +43,18 @@ const WORDS = [
   { w: "papa", cut: "pa – pa", need: ["p", "a"], img: "papa" },
   { w: "bébé", cut: "bé – bé", need: ["b", "é"], img: "bebe" },
   { w: "vélo", cut: "vé – lo", need: ["v", "é", "l", "o"], img: "velo" },
+  { w: "coco", cut: "co – co", need: ["c", "o"], img: "cadeau" },
+  { w: "lac", cut: "lac", need: ["l", "a", "c"], img: "lune" },
+  { w: "sac", cut: "sac", need: ["s", "a", "c"], img: "soleil" },
+  { w: "gogo", cut: "go – go", need: ["g", "o"], img: "gateau" },
+  { w: "jojo", cut: "jo – jo", need: ["j", "o"], img: "jus" },
+  { w: "jus", cut: "jus", need: ["j", "u", "s"], img: "jus" },
+  { w: "zoo", cut: "zo", need: ["z", "o"], img: "zoo" },
+  { w: "chat", cut: "cha – t", need: ["ch", "a", "t"], img: "chat" },
+  { w: "kiwi", cut: "ki – wi", need: ["k", "i", "w"], img: "kiwi" },
+  { w: "taxi", cut: "ta – xi", need: ["t", "a", "x", "i"], img: "taxi" },
+  { w: "yoyo", cut: "yo – yo", need: ["y", "o"], img: "yoyo" },
+  { w: "qui", cut: "qui", need: ["q", "i"], img: "quatre" },
 ];
 const PHRASES = [
   { t: "Lila lit.", cut: "Li – la    lit", say: "Lila lit.", img: "lili", parts: ["Li", "la", "lit"] },
@@ -39,9 +62,12 @@ const PHRASES = [
   { t: "Papa et maman.", cut: "Pa – pa    et    ma – man", say: "Papa et maman.", img: "papa", parts: ["Pa", "pa", "et", "ma", "man"] },
   { t: "Le bébé rit.", cut: "Le    bé – bé    rit", say: "Le bébé rit.", img: "bebe", parts: ["Le", "bé", "bé", "rit"] },
   { t: "La fée vole.", cut: "La    fée    vo – le", say: "La fée vole.", img: "fee", parts: ["La", "fée", "vo", "le"] },
+  { t: "Jojo rit.", cut: "Jo – jo    rit", say: "Jojo rit.", img: "jus", parts: ["Jo", "jo", "rit"] },
+  { t: "Le chat lit.", cut: "Le    chat    lit", say: "Le chat lit.", img: "chat", parts: ["Le", "chat", "lit"] },
+  { t: "Coco lit.", cut: "Co – co    lit", say: "Coco lit.", img: "cadeau", parts: ["Co", "co", "lit"] },
 ];
-const TTS = { a: "ah", i: "i", o: "oh", u: "u", é: "é", e: "euh", m: "mmm", l: "lll", s: "sss", n: "nnn", r: "rrr", f: "fff", v: "vvv", p: "p", t: "t", d: "d", b: "b" };
-const ALIAS = { a: ["a", "ah", "à"], i: ["i", "y"], o: ["o", "oh", "eau"], u: ["u"], é: ["é", "et", "est"], e: ["e", "euh"], m: ["m", "em", "aime"], l: ["l", "elle", "le"], s: ["s", "esse"], n: ["n", "ne"], r: ["r", "air"], f: ["f", "fée"], v: ["v", "vé"], p: ["p"], t: ["t"], d: ["d"], b: ["b", "bé"] };
+const TTS = { a: "ah", i: "i", o: "oh", u: "u", é: "é", e: "euh", m: "mmm", l: "lll", s: "sss", n: "nnn", r: "rrr", f: "fff", v: "vvv", p: "p", t: "t", d: "d", b: "b", c: "k", g: "g", j: "j", z: "zzz", k: "k", q: "k", y: "i", w: "ou", x: "ks", h: "h se tait", ch: "ch" };
+const ALIAS = { a: ["a", "ah", "à"], i: ["i", "y"], o: ["o", "oh", "eau"], u: ["u"], é: ["é", "et", "est"], e: ["e", "euh"], m: ["m", "em", "aime"], l: ["l", "elle", "le"], s: ["s", "esse"], n: ["n", "ne"], r: ["r", "air"], f: ["f", "fée"], v: ["v", "vé"], p: ["p"], t: ["t"], d: ["d"], b: ["b", "bé"], c: ["c", "k", "ça"], g: ["g"], j: ["j", "ji"], z: ["z", "zed"], k: ["k", "ka"], q: ["q", "k", "qu"], y: ["y", "i"], w: ["w", "ou"], x: ["x", "ks"], h: ["h"], ch: ["ch", "chat"] };
 
 const S = {
   stars: Number(localStorage.getItem("syl_stars") || 0),
@@ -51,7 +77,7 @@ const S = {
   vowel: "a", cons: "m", shown: "m", fusion: 0,
   listenT: "ma", listenC: [], listenOk: 0, listenN: 0,
   buildT: "ma", buildC: "", buildV: "",
-  write: "ma", phrase: 0, phraseStep: -1, raMode: "syl", raItem: "ma", expect: "", busy: false,
+  write: "ma", writeKind: "letter", writeTool: "kb", typed: "", phrase: 0, phraseStep: -1, raMode: "syl", raItem: "ma", expect: "", busy: false,
 };
 if (!localStorage.getItem("syl_simba")) {
   S.style = "cub";
@@ -77,9 +103,15 @@ function toast(m) {
 }
 function award() { S.stars++; save(); toast("Bravo !"); }
 function known() { return CONSONANTS.filter((c) => S.unlocked.includes(c.l)); }
+function consSyls(c) {
+  if (c.noFusion) return [];
+  if (c.l === "q") return ["qua", "que", "qui", "quo", "qué"];
+  if (c.l === "ch") return VOWELS.map((v) => "ch" + v.l);
+  return VOWELS.map((v) => c.l + v.l);
+}
 function syls() {
   const out = [];
-  known().forEach((c) => VOWELS.forEach((v) => out.push(c.l + v.l)));
+  known().forEach((c) => out.push(...consSyls(c)));
   return out;
 }
 function pickVoice() {
@@ -141,7 +173,8 @@ function speakLila() {
   playClip("audio/lila-intro.mp3", "Hey ! Moi c'est Lila. Viens, on va lire ensemble.");
 }
 function playPhoneme(letter) {
-  const key = letter === "é" ? "e_aigu" : letter;
+  if (letter === "h") { speak("h se tait"); return; }
+  const key = letter === "é" ? "e_aigu" : (letter === "k" || letter === "q" || letter === "qu") ? "c" : letter;
   const a = new Audio("audio/" + encodeURIComponent(key) + ".mp3");
   a.onerror = () => {
     if (letter === "l") return;
@@ -152,7 +185,7 @@ function playPhoneme(letter) {
     speak(TTS[letter] || letter);
   });
 }
-function speakSyl(s) { if (String(s).length === 1) playPhoneme(s); else speak(s); }
+function speakSyl(s) { if (String(s).length === 1 || s === "ch" || s === "qu") playPhoneme(s); else speak(s); }
 function wait(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
 function go(id) {
@@ -168,7 +201,10 @@ function go(id) {
   if (id === "listen") startListen();
   if (id === "build") startBuild();
   if (id === "words") renderWords();
-  if (id === "write") renderWrite();
+  if (id === "write") {
+    if (!writePool().includes(S.write)) nextWrite();
+    else renderWrite();
+  }
   if (id === "readaloud") renderRA();
   if (id === "phrases") renderPhrases();
   if (id === "parent") renderParent();
@@ -196,7 +232,7 @@ const HOME = [
   ["listen", "J’écoute", "Trouve la syllabe", "vol", "c4"],
   ["build", "Je construis", "Lettres vers syllabe", "puzzle", "c2"],
   ["words", "Premiers mots", "Je lis pour de vrai", "book", "c3"],
-  ["write", "J’écris", "Doigt ou stylet", "pencil", "c1"],
+  ["write", "J’écris", "Clavier ou doigt", "pencil", "c1"],
   ["readaloud", "Je lis tout haut", "Lila écoute et valide", "mic", "c4"],
   ["phrases", "Petites phrases", "Sens et fierté", "book", "c2"],
   ["parent", "Guide parent", "Voix et routine", "info", "c3"],
@@ -214,12 +250,14 @@ renderHome();
 
 function pic(name, cls) {
   if (!name) return "";
-  return `<img class="${cls || "pic"}" src="img/${name}.jpg" alt="" />`;
+  return `<img class="${cls || "pic"}" src="img/${name}.jpg" alt="" onerror="this.style.display='none'" />`;
 }
 function glyph(s) {
   s = String(s || "");
-  if (s.length !== 1) return s;
-  return `<span class="pair"><b>${s.toUpperCase()}</b><i>${s.toLowerCase()}</i></span>`;
+  if (s.length === 1 || s === "ch" || s === "qu") {
+    return `<span class="pair"><b>${s.toUpperCase()}</b><i>${s.toLowerCase()}</i></span>`;
+  }
+  return s;
 }
 function renderVowels() {
   const v = VOWELS.find((x) => x.l === S.vowel) || VOWELS[0];
@@ -254,21 +292,23 @@ function renderIsland() {
     <h2>Île de ${c.l.toUpperCase()} ${c.l}</h2>
     ${pic(c.img)}
     <p class="sub">${c.hint}</p>
-    <div class="giant">${String(S.shown).length === 1 ? glyph(S.shown) : S.shown}</div>
+    <div class="giant">${glyph(S.shown)}</div>
     <div class="row">
       <button class="btn p" onclick="S.shown='${c.l}';renderIsland();playPhoneme('${c.l}')">Son de la lettre</button>
       <button class="btn m" onclick="listenCheck(S.shown)">Je lis</button>
-      <button class="btn s" onclick="go('fusion')">Fusionner</button>
+      ${c.noFusion ? "" : `<button class="btn s" onclick="go('fusion')">Fusionner</button>`}
     </div>
-    <h3>Syllabes</h3>
-    <div class="row">${VOWELS.map((v) => {
-      const s = c.l + v.l;
-      return `<button class="letter" style="width:88px" onclick="S.shown='${s}';renderIsland();speakSyl('${s}')">${s}</button>`;
-    }).join("")}</div>`;
+    ${c.noFusion ? "<p class='sub'>Cette lettre n’a pas de fusion simple. On la reconnaît dans les mots.</p>" : `<h3>Syllabes</h3>
+    <div class="row">${consSyls(c).map((s) => `<button class="letter" style="width:88px" onclick="S.shown='${s}';renderIsland();speakSyl('${s}')">${s}</button>`).join("")}</div>`}`;
 }
 function fusionList() {
   const list = [];
-  known().forEach((c) => VOWELS.slice(0, 5).forEach((v) => list.push({ c: c.l, v: v.l, s: c.l + v.l })));
+  known().forEach((c) => {
+    consSyls(c).slice(0, 5).forEach((s) => {
+      const v = s.startsWith("ch") ? s.slice(2) : s.startsWith("qu") ? s.slice(2) : s.slice(c.l.length);
+      list.push({ c: c.l === "q" ? "qu" : c.l, v: v || s.slice(-1), s });
+    });
+  });
   return list.length ? list : [{ c: "m", v: "a", s: "ma" }];
 }
 function renderFusion() {
@@ -380,22 +420,106 @@ function playWord(w, cut) {
   const tick = () => { if (i < parts.length) { speak(parts[i]); i++; setTimeout(tick, 1200); } else setTimeout(() => speak(w), 450); };
   tick();
 }
+function writePool() {
+  if (S.writeKind === "letter") return [...VOWELS.map((v) => v.l), ...known().map((c) => c.l)];
+  if (S.writeKind === "word") {
+    const k = new Set(["a", "e", "i", "o", "u", "é", ...S.unlocked]);
+    const list = WORDS.filter((w) => w.need.every((l) => k.has(l))).map((w) => w.w);
+    return list.length ? list : ["maman"];
+  }
+  const s = syls();
+  return s.length ? s : ["ma"];
+}
+function kbRows() {
+  const rows = [
+    ["a", "z", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["q", "s", "d", "f", "g", "h", "j", "k", "l", "m"],
+    ["w", "x", "c", "v", "b", "n", "é"],
+  ];
+  return rows.map((row) =>
+    `<div class="kb-row">${row.map((k) =>
+      `<button type="button" class="key" onclick="writeAdd('${k}')">${glyph(k)}</button>`
+    ).join("")}</div>`
+  ).join("");
+}
 function renderWrite() {
-  const items = ["a", "i", "o", "u", "é", "m", "l", ...syls().slice(0, 12)];
+  const ok = fold(S.typed) === fold(S.write) && S.typed;
   document.getElementById("writeBox").innerHTML = `
     <h2>J’écris</h2>
-    <p class="sub">Regarde le modèle, puis trace.</p>
-    <div class="giant" style="color:#d4c3ad">${String(S.write).length === 1 ? glyph(S.write) : S.write}</div>
-    <div class="row">${items.map((it) => `<button class="letter" style="width:auto;min-width:64px;height:56px;font-size:1.3rem;padding:8px 10px" onclick="S.write='${it}';renderWrite();speakSyl('${it}')">${it.length === 1 ? glyph(it) : it}</button>`).join("")}</div>
-    <div id="boardWrap"><canvas id="board"></canvas></div>
     <div class="row">
-      <button class="btn g" onclick="clearBoard()">Effacer</button>
+      <button class="btn ${S.writeTool === "kb" ? "p" : "g"}" onclick="S.writeTool='kb';renderWrite()">Clavier</button>
+      <button class="btn ${S.writeTool === "finger" ? "p" : "g"}" onclick="S.writeTool='finger';renderWrite()">Doigt</button>
+    </div>
+    <div class="row">
+      <button class="btn g" onclick="S.writeKind='letter';nextWrite()">Lettre</button>
+      <button class="btn g" onclick="S.writeKind='syl';nextWrite()">Syllabe</button>
+      <button class="btn g" onclick="S.writeKind='word';nextWrite()">Mot</button>
+    </div>
+    <p class="sub">${S.writeKind === "letter" ? "Écris cette lettre" : S.writeKind === "word" ? "Écris ce mot" : "Écris cette syllabe"}</p>
+    <div class="giant" style="color:#d4c3ad">${glyph(S.write) === S.write && S.write.length > 2 ? S.write : glyph(S.write)}</div>
+    ${S.writeTool === "kb" ? `
+      <div class="typed ${S.typed ? "" : "empty"}">${S.typed ? S.typed : "…"}</div>
+      <div class="kb">
+        ${kbRows()}
+        <div class="kb-row">
+          <button type="button" class="key wide" onclick="writeDel()">Effacer</button>
+          <button type="button" class="key wide" onclick="writeAdd(' ')">Espace</button>
+          <button type="button" class="key wide" onclick="nextWrite()">Autre</button>
+        </div>
+      </div>
+      <p class="sub">Tu peux aussi utiliser le clavier de l’ordinateur ou de la tablette.</p>
+    ` : `
+      <div id="boardWrap"><canvas id="board"></canvas></div>
+    `}
+    <div class="row">
+      ${S.writeTool === "finger" ? `<button class="btn g" onclick="clearBoard()">Effacer</button>` : ""}
       <button class="btn p" onclick="speakSyl(S.write)">Dire</button>
       <button class="btn m" onclick="listenCheck(S.write)">Je lis</button>
-      <button class="btn s" onclick="award()">J’ai fini</button>
+      ${ok ? `<button class="btn s" onclick="writeSuccess()">Bravo, suivant</button>` : ""}
     </div>`;
-  setupBoard();
+  if (S.writeTool === "finger") setupBoard();
 }
+function nextWrite() {
+  const pool = writePool();
+  let pick = pool[Math.floor(Math.random() * pool.length)] || "ma";
+  if (pool.length > 1 && pick === S.write) pick = pool[Math.floor(Math.random() * pool.length)];
+  S.write = pick;
+  S.typed = "";
+  renderWrite();
+  speakSyl(S.write);
+}
+function writeAdd(ch) {
+  ch = String(ch).toLowerCase();
+  if (ch === " ") {
+    if (S.writeKind === "word") S.typed += " ";
+  } else if (!/^[a-zàâéèêëïîôùûüç]$/.test(ch)) return;
+  else if (S.writeKind === "letter" && S.write.length === 1) S.typed = ch;
+  else S.typed += ch;
+  renderWrite();
+  if (fold(S.typed) === fold(S.write) && S.typed) writeSuccess();
+}
+function writeDel() {
+  S.typed = String(S.typed || "").slice(0, -1);
+  renderWrite();
+}
+function writeSuccess() {
+  if (S.busy) return;
+  S.busy = true;
+  award();
+  playClip("audio/bravo.mp3", "Bravo !").then(() => wait(300)).then(() => {
+    S.busy = false;
+    nextWrite();
+  });
+}
+document.addEventListener("keydown", (e) => {
+  const scr = document.getElementById("write");
+  if (!scr || !scr.classList.contains("on") || S.writeTool !== "kb") return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "Backspace") { e.preventDefault(); writeDel(); }
+  else if (e.key === "Enter") { e.preventDefault(); if (fold(S.typed) === fold(S.write)) writeSuccess(); }
+  else if (e.key === " ") { e.preventDefault(); writeAdd(" "); }
+  else if (e.key.length === 1) { e.preventDefault(); writeAdd(e.key); }
+});
 let drawing = false, last = null;
 function setupBoard() {
   const canvas = document.getElementById("board");
