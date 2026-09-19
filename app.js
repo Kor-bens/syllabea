@@ -281,7 +281,7 @@ function renderMap() {
 }
 function openIsland(l, i, open) {
   if (!open) {
-    if (S.stars >= i * 4) { S.unlocked.push(l); save(); }
+    if (S.stars >= i * 2) { S.unlocked.push(l); save(); }
     else { toast("Encore quelques étoiles"); return; }
   }
   S.cons = l; S.shown = l; go("island"); renderIsland(); playPhoneme(l);
